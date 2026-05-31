@@ -9,6 +9,6 @@
     'license': 'LGPL-3',
     'depends': ['crm'],
     'installable': True,
-    'application': False,
+    'application': True,
     'auto_install': False,
 }
