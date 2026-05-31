@@ -15,7 +15,7 @@ ALLOWED_ORIGINS = {
     "http://localhost:5173",
 }
 
-LOGO_URL = "https://alphaqueb.com/alpha/alphalogo.png"
+LOGO_PATH = "/alphaqueb_contact_api/static/description/alphaquebdarck.png"
 
 ACK_EMAIL_HTML = """\
 <!DOCTYPE html>
@@ -58,36 +58,6 @@ ACK_EMAIL_HTML = """\
       En breve coordinaremos una <strong style="color:#0c0d10;">sesión corta</strong> para entender tu
       operación y definir, con franqueza, si tenemos algo que aportar.
     </p>
-  </td></tr>
-
-  <!-- Qué sigue -->
-  <tr><td style="padding:26px 40px 0 40px;">
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#fafafa;border:1px solid #ededf0;border-radius:12px;">
-      <tr><td style="padding:22px 24px;">
-        <p style="margin:0 0 16px 0;font-family:'SFMono-Regular',Consolas,Menlo,monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#71717a;">Qué sigue</p>
-
-        <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-          <tr>
-            <td width="34" valign="top" style="font-family:'SFMono-Regular',Consolas,Menlo,monospace;font-size:13px;color:#0c0d10;font-weight:700;">01</td>
-            <td style="font-family:Helvetica,Arial,sans-serif;font-size:14px;line-height:1.55;color:#3f3f46;padding-bottom:14px;">
-              <strong style="color:#0c0d10;">Revisión.</strong> Leemos tu reto y lo contrastamos con lo que sabemos hacer de verdad.
-            </td>
-          </tr>
-          <tr>
-            <td width="34" valign="top" style="font-family:'SFMono-Regular',Consolas,Menlo,monospace;font-size:13px;color:#0c0d10;font-weight:700;">02</td>
-            <td style="font-family:Helvetica,Arial,sans-serif;font-size:14px;line-height:1.55;color:#3f3f46;padding-bottom:14px;">
-              <strong style="color:#0c0d10;">Sesión de diagnóstico.</strong> Una llamada para entender tu operación y tus KPIs.
-            </td>
-          </tr>
-          <tr>
-            <td width="34" valign="top" style="font-family:'SFMono-Regular',Consolas,Menlo,monospace;font-size:13px;color:#0c0d10;font-weight:700;">03</td>
-            <td style="font-family:Helvetica,Arial,sans-serif;font-size:14px;line-height:1.55;color:#3f3f46;">
-              <strong style="color:#0c0d10;">Ruta.</strong> Si hay encaje, definimos baseline, prioridades y siguientes pasos.
-            </td>
-          </tr>
-        </table>
-      </td></tr>
-    </table>
   </td></tr>
 
   <!-- CTA -->
@@ -159,8 +129,12 @@ def _send_ack_email(env, to_email, first_name, company):
     try:
         saludo = ("Hola %s," % first_name) if first_name else "Hola,"
         company_bit = (" desde %s" % company) if company else ""
+        base_url = env["ir.config_parameter"].sudo().get_param(
+            "web.base.url", "https://alphaqueb.com"
+        ).rstrip("/")
+        logo_url = "%s%s" % (base_url, LOGO_PATH)
         body = (ACK_EMAIL_HTML
-                .replace("__LOGO_URL__", LOGO_URL)
+                .replace("__LOGO_URL__", logo_url)
                 .replace("__SALUDO__", saludo)
                 .replace("__COMPANY_BIT__", company_bit))
 
