@@ -15,6 +15,116 @@ ALLOWED_ORIGINS = {
     "http://localhost:5173",
 }
 
+LOGO_URL = "https://alphaqueb.com/alpha/alphalogo.png"
+
+ACK_EMAIL_HTML = """\
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>Hemos recibido tu mensaje</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f4f4f5;-webkit-text-size-adjust:100%;">
+<div style="display:none;max-height:0;overflow:hidden;opacity:0;">Recibimos tu mensaje. Lo estamos revisando y coordinaremos una sesión contigo.</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f4f4f5;">
+<tr><td align="center" style="padding:32px 16px;">
+<table role="presentation" width="600" cellpadding="0" cellspacing="0" style="width:600px;max-width:600px;background-color:#ffffff;border:1px solid #e7e7ea;border-radius:14px;overflow:hidden;">
+
+  <!-- Header -->
+  <tr><td style="padding:34px 40px 22px 40px;text-align:center;background-color:#ffffff;">
+    <img src="__LOGO_URL__" width="170" alt="Alphaqueb" style="display:inline-block;height:auto;border:0;">
+  </td></tr>
+  <tr><td style="padding:0 40px;"><div style="height:1px;background-color:#0c0d10;"></div></td></tr>
+
+  <!-- Eyebrow + título -->
+  <tr><td style="padding:30px 40px 0 40px;">
+    <p style="margin:0 0 14px 0;font-family:'SFMono-Regular',Consolas,Menlo,monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#16a34a;">
+      &#9679; Recepción confirmada
+    </p>
+    <h1 style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:27px;line-height:1.25;color:#0c0d10;font-weight:600;">
+      Hemos recibido tu mensaje.
+    </h1>
+  </td></tr>
+
+  <!-- Cuerpo -->
+  <tr><td style="padding:22px 40px 0 40px;font-family:Helvetica,Arial,sans-serif;font-size:15px;line-height:1.65;color:#3f3f46;">
+    <p style="margin:0 0 16px 0;">__SALUDO__</p>
+    <p style="margin:0 0 16px 0;">
+      Gracias por escribirnos__COMPANY_BIT__. Tu mensaje ya está con nosotros y lo estamos
+      revisando con atención. No es un acuse automático cualquiera: en Alphaqueb cada reto
+      entra a un proceso real de evaluación.
+    </p>
+    <p style="margin:0 0 8px 0;">
+      En breve coordinaremos una <strong style="color:#0c0d10;">sesión corta</strong> para entender tu
+      operación y definir, con franqueza, si tenemos algo que aportar.
+    </p>
+  </td></tr>
+
+  <!-- Qué sigue -->
+  <tr><td style="padding:26px 40px 0 40px;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#fafafa;border:1px solid #ededf0;border-radius:12px;">
+      <tr><td style="padding:22px 24px;">
+        <p style="margin:0 0 16px 0;font-family:'SFMono-Regular',Consolas,Menlo,monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#71717a;">Qué sigue</p>
+
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+          <tr>
+            <td width="34" valign="top" style="font-family:'SFMono-Regular',Consolas,Menlo,monospace;font-size:13px;color:#0c0d10;font-weight:700;">01</td>
+            <td style="font-family:Helvetica,Arial,sans-serif;font-size:14px;line-height:1.55;color:#3f3f46;padding-bottom:14px;">
+              <strong style="color:#0c0d10;">Revisión.</strong> Leemos tu reto y lo contrastamos con lo que sabemos hacer de verdad.
+            </td>
+          </tr>
+          <tr>
+            <td width="34" valign="top" style="font-family:'SFMono-Regular',Consolas,Menlo,monospace;font-size:13px;color:#0c0d10;font-weight:700;">02</td>
+            <td style="font-family:Helvetica,Arial,sans-serif;font-size:14px;line-height:1.55;color:#3f3f46;padding-bottom:14px;">
+              <strong style="color:#0c0d10;">Sesión de diagnóstico.</strong> Una llamada para entender tu operación y tus KPIs.
+            </td>
+          </tr>
+          <tr>
+            <td width="34" valign="top" style="font-family:'SFMono-Regular',Consolas,Menlo,monospace;font-size:13px;color:#0c0d10;font-weight:700;">03</td>
+            <td style="font-family:Helvetica,Arial,sans-serif;font-size:14px;line-height:1.55;color:#3f3f46;">
+              <strong style="color:#0c0d10;">Ruta.</strong> Si hay encaje, definimos baseline, prioridades y siguientes pasos.
+            </td>
+          </tr>
+        </table>
+      </td></tr>
+    </table>
+  </td></tr>
+
+  <!-- CTA -->
+  <tr><td style="padding:28px 40px 4px 40px;" align="center">
+    <table role="presentation" cellpadding="0" cellspacing="0"><tr>
+      <td style="border-radius:9px;background-color:#0c0d10;">
+        <a href="https://alphaqueb.com/#enfoque" target="_blank"
+           style="display:inline-block;padding:13px 30px;font-family:Helvetica,Arial,sans-serif;font-size:14px;font-weight:600;color:#ffffff;text-decoration:none;border-radius:9px;">
+          Conoce nuestro enfoque
+        </a>
+      </td>
+    </tr></table>
+  </td></tr>
+
+  <tr><td style="padding:18px 40px 32px 40px;text-align:center;font-family:'SFMono-Regular',Consolas,Menlo,monospace;font-size:11px;letter-spacing:1px;color:#a1a1aa;">
+    Respuesta en &lt; 24 h &middot; NDA disponible &middot; diagnóstico pagado de 30&ndash;40 h
+  </td></tr>
+
+  <!-- Footer -->
+  <tr><td style="padding:28px 40px;background-color:#0c0d10;">
+    <p style="margin:0 0 10px 0;font-family:Georgia,serif;font-size:15px;color:#ffffff;font-weight:600;">Alphaqueb</p>
+    <p style="margin:0 0 16px 0;font-family:Helvetica,Arial,sans-serif;font-size:13px;line-height:1.6;color:#a1a1aa;">
+      Construimos sistemas alrededor de tu operación, no al revés.<br>
+      Datos que informan. Estrategias que transforman.
+    </p>
+    <p style="margin:0;font-family:'SFMono-Regular',Consolas,Menlo,monospace;font-size:11px;line-height:1.8;letter-spacing:0.5px;color:#71717a;">
+      MONTERREY, NL &middot; OPERACIÓN NACIONAL<br>
+      LUN&ndash;VIE &middot; 09:00&ndash;19:00 CDT<br>
+      &copy; 2026 ALPHAQUEB
+    </p>
+  </td></tr>
+
+</table>
+</td></tr></table>
+</body></html>
+"""
+
 
 def _cors_headers():
     origin = request.httprequest.headers.get("Origin", "")
@@ -34,13 +144,38 @@ def _json(payload, status=200):
 
 
 def _build_full_name(data):
-    """Nombre de contacto = nombre + apellido. Cae a 'name' si mandan el completo."""
     first = (data.get("first_name") or "").strip()
     last = (data.get("last_name") or "").strip()
     full = " ".join(p for p in (first, last) if p).strip()
     if not full:
         full = (data.get("name") or "").strip()
     return full
+
+
+def _send_ack_email(env, to_email, first_name, company):
+    """Envia el correo de acuse al prospecto. Aislado: nunca rompe el alta del lead."""
+    if not to_email:
+        return
+    try:
+        saludo = ("Hola %s," % first_name) if first_name else "Hola,"
+        company_bit = (" desde %s" % company) if company else ""
+        body = (ACK_EMAIL_HTML
+                .replace("__LOGO_URL__", LOGO_URL)
+                .replace("__SALUDO__", saludo)
+                .replace("__COMPANY_BIT__", company_bit))
+
+        sender = env.company.email or "contacto@alphaqueb.com"
+        mail = env["mail.mail"].sudo().create({
+            "subject": "Hemos recibido tu mensaje — Alphaqueb Consulting",
+            "email_from": "Alphaqueb Consulting <%s>" % sender,
+            "reply_to": sender,
+            "email_to": to_email,
+            "body_html": body,
+            "auto_delete": True,
+        })
+        mail.send(raise_exception=False)
+    except Exception:
+        _logger.exception("No se pudo enviar el correo de acuse a %s", to_email)
 
 
 class ContactApiController(http.Controller):
@@ -57,7 +192,6 @@ class ContactApiController(http.Controller):
         if request.httprequest.method == "OPTIONS":
             return request.make_response("", headers=_cors_headers(), status=204)
 
-        # Datos: acepta JSON body o form-urlencoded
         data = dict(kwargs)
         raw = request.httprequest.get_data(as_text=True)
         if raw:
@@ -68,10 +202,10 @@ class ContactApiController(http.Controller):
             except (ValueError, TypeError):
                 pass
 
+        first_name = (data.get("first_name") or "").strip()
         contact_name = _build_full_name(data)
         email = (data.get("email") or "").strip()
         phone = (data.get("phone") or "").strip()
-        # Empresa: acepta 'company' o 'company_name'
         company = (data.get("company") or data.get("company_name") or "").strip()
         message = (data.get("message") or "").strip()
 
@@ -86,14 +220,13 @@ class ContactApiController(http.Controller):
                 status=400,
             )
 
-        # Titulo del lead: empresa si existe, si no la persona
         lead_title = company or contact_name
 
         try:
             lead = request.env["crm.lead"].sudo().create({
                 "name": "Contacto web - %s" % lead_title,
-                "contact_name": contact_name,   # persona: nombre + apellido
-                "partner_name": company,        # empresa completa
+                "contact_name": contact_name,
+                "partner_name": company,
                 "email_from": email,
                 "phone": phone,
                 "description": message,
@@ -102,5 +235,8 @@ class ContactApiController(http.Controller):
         except Exception:
             _logger.exception("Error creando crm.lead desde /create_lead")
             return _json({"status": "error", "message": "Error interno al crear el lead."}, status=500)
+
+        # Acuse al prospecto (no bloquea la respuesta)
+        _send_ack_email(request.env, email, first_name, company)
 
         return _json({"status": "success", "lead_id": lead.id}, status=201)
