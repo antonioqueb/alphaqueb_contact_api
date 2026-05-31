@@ -17,12 +17,20 @@ ALLOWED_ORIGINS = {
 
 LOGO_PATH = "/alphaqueb_contact_api/static/description/alphaquebdarck.png"
 
+NOTIFY_USER_ID = 2
+
 ACK_EMAIL_HTML = """\
 <!DOCTYPE html>
 <html lang="es"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <title>Hemos recibido tu mensaje</title>
+<style>
+  @media (prefers-color-scheme: dark) {
+    .aq-logo { filter: invert(1) !important; }
+  }
+  [data-ogsc] .aq-logo { filter: invert(1) !important; }
+</style>
 </head>
 <body style="margin:0;padding:0;background-color:#f4f4f5;-webkit-text-size-adjust:100%;">
 <div style="display:none;max-height:0;overflow:hidden;opacity:0;">Recibimos tu mensaje. Lo estamos revisando y coordinaremos una sesión contigo.</div>
@@ -32,7 +40,7 @@ ACK_EMAIL_HTML = """\
 
   <!-- Header -->
   <tr><td style="padding:34px 40px 22px 40px;text-align:center;background-color:#ffffff;">
-    <img src="__LOGO_URL__" width="170" alt="Alphaqueb" style="display:inline-block;height:auto;border:0;">
+    <img src="__LOGO_URL__" width="170" alt="Alphaqueb" class="aq-logo" style="display:inline-block;height:auto;border:0;">
   </td></tr>
   <tr><td style="padding:0 40px;"><div style="height:1px;background-color:#0c0d10;"></div></td></tr>
 
@@ -120,6 +128,67 @@ def _build_full_name(data):
     if not full:
         full = (data.get("name") or "").strip()
     return full
+
+
+def _notify_owner(env, lead, contact_name, email, phone, company, message):
+    """Notifica al usuario interno (in-app + correo plano). Aislado: no rompe el alta."""
+    try:
+        user = env["res.users"].sudo().browse(NOTIFY_USER_ID).exists()
+        if not user:
+            return
+
+        base_url = env["ir.config_parameter"].sudo().get_param(
+            "web.base.url", ""
+        ).rstrip("/")
+        lead_url = ("%s/odoo/crm/%s" % (base_url, lead.id)) if base_url else ""
+
+        # Suscribir y avisar dentro de Odoo (bell / inbox)
+        if user.partner_id:
+            try:
+                lead.sudo().message_subscribe(partner_ids=[user.partner_id.id])
+                lead.sudo().message_post(
+                    body="Nueva oportunidad recibida desde el formulario web.",
+                    partner_ids=[user.partner_id.id],
+                    message_type="comment",
+                    subtype_xmlid="mail.mt_comment",
+                )
+            except Exception:
+                _logger.exception("No se pudo postear notificación in-app del lead %s", lead.id)
+
+        # Correo plano a su buzón personal
+        if user.email:
+            lines = [
+                "Nueva oportunidad recibida desde el formulario web.",
+                "",
+                "Nombre:   %s" % (contact_name or "-"),
+                "Empresa:  %s" % (company or "-"),
+                "Email:    %s" % (email or "-"),
+                "Telefono: %s" % (phone or "-"),
+                "",
+                "Mensaje:",
+                message or "(sin mensaje)",
+            ]
+            if lead_url:
+                lines += ["", "Ver en Odoo: %s" % lead_url]
+            text = "\n".join(lines)
+            safe = text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+            body_html = (
+                "<pre style=\"font-family:Menlo,Consolas,monospace;"
+                "white-space:pre-wrap;margin:0;\">%s</pre>" % safe
+            )
+            sender = env.company.email or "contacto@alphaqueb.com"
+            mail = env["mail.mail"].sudo().create({
+                "subject": "Nueva oportunidad: %s" % (contact_name or "sin nombre"),
+                "email_from": "Alphaqueb CRM <%s>" % sender,
+                "reply_to": email or sender,
+                "email_to": user.email,
+                "body_html": body_html,
+                "auto_delete": True,
+            })
+            mail.send(raise_exception=False)
+    except Exception:
+        _logger.exception("No se pudo notificar al usuario %s del lead %s",
+                          NOTIFY_USER_ID, getattr(lead, "id", "?"))
 
 
 def _send_ack_email(env, to_email, first_name, company):
@@ -212,5 +281,8 @@ class ContactApiController(http.Controller):
 
         # Acuse al prospecto (no bloquea la respuesta)
         _send_ack_email(request.env, email, first_name, company)
+
+        # Aviso interno (in-app + correo plano al dueño)
+        _notify_owner(request.env, lead, contact_name, email, phone, company, message)
 
         return _json({"status": "success", "lead_id": lead.id}, status=201)
