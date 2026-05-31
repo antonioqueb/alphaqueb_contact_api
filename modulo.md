@@ -1,3 +1,33 @@
+## ./__init__.py
+```py
+from . import controllers
+```
+
+## ./__manifest__.py
+```py
+{
+    'name': 'Alphaqueb Contact API',
+    'version': '19.0.1.0.0',
+    'summary': 'Endpoint publico /create_lead para el formulario de contacto del sitio',
+    'description': 'Expone un endpoint HTTP que recibe el formulario de alphaqueb.com/#contacto y crea un crm.lead.',
+    'category': 'CRM',
+    'author': 'Alphaqueb Consulting SAS',
+    'website': 'https://alphaqueb.com',
+    'license': 'LGPL-3',
+    'depends': ['crm'],
+    'installable': True,
+    'application': True,
+    'auto_install': False,
+}
+```
+
+## ./controllers/__init__.py
+```py
+from . import main
+```
+
+## ./controllers/main.py
+```py
 # -*- coding: utf-8 -*-
 import json
 import logging
@@ -33,16 +63,6 @@ def _json(payload, status=200):
     return request.make_response(json.dumps(payload), headers=_cors_headers(), status=status)
 
 
-def _build_full_name(data):
-    """Nombre de contacto = nombre + apellido. Cae a 'name' si mandan el completo."""
-    first = (data.get("first_name") or "").strip()
-    last = (data.get("last_name") or "").strip()
-    full = " ".join(p for p in (first, last) if p).strip()
-    if not full:
-        full = (data.get("name") or "").strip()
-    return full
-
-
 class ContactApiController(http.Controller):
 
     @http.route(
@@ -54,6 +74,7 @@ class ContactApiController(http.Controller):
         save_session=False,
     )
     def create_lead(self, **kwargs):
+        # Preflight CORS
         if request.httprequest.method == "OPTIONS":
             return request.make_response("", headers=_cors_headers(), status=204)
 
@@ -68,39 +89,33 @@ class ContactApiController(http.Controller):
             except (ValueError, TypeError):
                 pass
 
-        contact_name = _build_full_name(data)
+        contact_name = (data.get("name") or "").strip()
         email = (data.get("email") or "").strip()
         phone = (data.get("phone") or "").strip()
-        # Empresa: acepta 'company' o 'company_name'
-        company = (data.get("company") or data.get("company_name") or "").strip()
+        company = (data.get("company") or "").strip()
         message = (data.get("message") or "").strip()
 
-        missing = []
-        if not contact_name:
-            missing.append("name (o first_name/last_name)")
-        if not email:
-            missing.append("email")
+        missing = [f for f in ("name", "email") if not data.get(f)]
         if missing:
             return _json(
                 {"status": "error", "message": "Faltan campos: %s" % ", ".join(missing)},
                 status=400,
             )
 
-        # Titulo del lead: empresa si existe, si no la persona
-        lead_title = company or contact_name
-
         try:
             lead = request.env["crm.lead"].sudo().create({
-                "name": "Contacto web - %s" % lead_title,
-                "contact_name": contact_name,   # persona: nombre + apellido
-                "partner_name": company,        # empresa completa
+                "name": "Contacto web - %s" % contact_name,
+                "contact_name": contact_name,
                 "email_from": email,
                 "phone": phone,
+                "partner_name": company,
                 "description": message,
                 "type": "lead",
             })
-        except Exception:
+        except Exception as e:
             _logger.exception("Error creando crm.lead desde /create_lead")
             return _json({"status": "error", "message": "Error interno al crear el lead."}, status=500)
 
         return _json({"status": "success", "lead_id": lead.id}, status=201)
+```
+
